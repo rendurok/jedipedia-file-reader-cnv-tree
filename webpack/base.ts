@@ -17,10 +17,10 @@ const config: Configuration = {
             },
         ],
     },
-    externals: {
+    /*externals: {
         axios: "axios",
         "@trim21/gm-fetch": "GM_fetch",
-    },
+    },*/
     optimization: {
         minimize: false,
         minimizer: [new TerserPlugin({

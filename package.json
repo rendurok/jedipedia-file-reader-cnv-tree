@@ -1,7 +1,7 @@
 {
-  "name": "userscript-typescript-template",
-  "version": "2.0.2",
-  "description": "Template repo using Webpack and TypeScript to build your userscript for Tampermonkey and more extensions.",
+  "name": "jedipedia-file-reader-cnv-tree",
+  "version": "2.0",
+  "description": "Improves the conversation tree display of the Jedipedia File Reader.",
   "main": "userscript/index.user.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -11,15 +11,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pboymt/userscript-typescript-template.git"
+    "url": "git+https://github.com/rendurok/jedipedia-file-reader-cnv-tree.git"
   },
   "keywords": [],
-  "author": "pboymt",
+  "author": "rendurok",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/pboymt/userscript-typescript-template/issues"
+    "url": "https://github.com/rendurok/jedipedia-file-reader-cnv-tree/issues"
   },
-  "homepage": "https://github.com/pboymt/userscript-typescript-template#readme",
+  "homepage": "https://github.com/rendurok/jedipedia-file-reader-cnv-tree#readme",
   "devDependencies": {
     "@types/node": "^18.15.11",
     "@types/prettier": "^2.7.0",
@@ -35,26 +35,13 @@
     "webpack-merge": "^5.8.0"
   },
   "userscript": {
-    "require-template": "https://cdn.jsdelivr.net/npm/${dependencyName}@${dependencyVersion}",
-    "namespace": "http://tampermonkey.net/",
     "license": "https://opensource.org/licenses/MIT",
     "match": [
-      "https://github.com/*",
-      "https://www.baidu.com/*"
+      "https://swtor.jedipedia.net/reader"
     ],
-    "connect": [
-      "github.com"
-    ],
-    "require": [],
+    "run-at": "document-idle",
     "grant": [
-      "GM.xmlHttpRequest"
-    ],
-    "exclude": [],
-    "resources": [],
-    "keyedResources": {}
-  },
-  "dependencies": {
-    "@trim21/gm-fetch": "^0.1.13",
-    "axios": "^1.3.6"
+      "none"
+    ]
   }
 }
