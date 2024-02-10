@@ -1,13 +1,4 @@
-import axios from "axios";
-import fetchAdapter from "./adapter";
+import { addNavbarButton } from './render/buttons';
+import { renderCurrentConversations } from './render/cnvTree';
 
-axios.defaults.adapter = fetchAdapter;
-
-async function main() {
-    console.log('Hello, world!');
-    const result = await axios.get<string>('https://github.com/pboymt/userscript-typescript-template');
-    console.log(`Status: ${result.status}`);
-    console.log(`Content Length: ${result.data.length}`);
-}
-
-main();
+addNavbarButton('cnv-parse-button', 'CNV', () => renderCurrentConversations());
