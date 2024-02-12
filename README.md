@@ -13,7 +13,37 @@ Made with [pboymt's userscript-typescript-template](https://github.com/pboymt/us
 
 ## Installation
 
-TODO
+### Userscript Manager & Greasy Fork (recommended)
+
+1. Install a userscript manager extension for your browser, like Tampermonkey, Greasemonkey or Violentmonkey. 
+2. Go to [the Greasy Fork page of this userscript](https://greasyfork.org/en/scripts/487152-jedipedia-file-reader-cnv-tree). 
+3. Click the "Install this script"-button and follow your script manager's instructions to install and enable the script. 
+
+The script will run and update automatically, unless disabled by user.
+
+### Userscript Manager Manually
+
+1. Install a userscript manager extension for your browser, like Tampermonkey, Greasemonkey or Violentmonkey. 
+2. Download the [latest release](https://github.com/rendurok/jedipedia-file-reader-cnv-tree/releases/latest/download/index.prod.user.js).
+3. Create a new user script in your manager. 
+4. Edit the script you just created. 
+5. Remove all contents of the script. 
+6. Paste the contents of the file you just downloaded into the script. 
+7. Save the script. 
+
+The script will run automatically, unless disabled by user. To update the script, repeat steps 2 and 4-6. 
+
+### Pasting Into Console
+
+1. Download the [latest release](https://github.com/rendurok/jedipedia-file-reader-cnv-tree/releases/latest/download/index.prod.user.js).
+2. Open your browser's developer tools while in the file reader, and navigate to the console.
+3. Copy the contents of the file you just downloaded, paste them into the console, and press enter. Some browsers might also support just dragging the file into the text field. 
+
+Repeat steps 2 and 3 every time you open the file reader and want to use the script. Repeat step 1 to update the script. 
+
+### Bookmarklet
+
+Not supported, since webpak uses single-line comments in the built file that mess with bookmarklets. However, if you know what you're doing and really want to use a bookmarklet, it should work if you just manually remove all single-line comments first.
 
 ## Usage
 
