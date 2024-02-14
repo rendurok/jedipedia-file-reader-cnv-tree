@@ -43,7 +43,7 @@ Repeat steps 2 and 3 every time you open the file reader and want to use the scr
 
 ### Bookmarklet
 
-Not supported, since webpak uses single-line comments in the built file that mess with bookmarklets. However, if you know what you're doing and really want to use a bookmarklet, it should work if you just manually remove all single-line comments first.
+Not supported, since webpack uses single-line comments in the built file that mess with bookmarklets. However, if you know what you're doing and really want to use a bookmarklet, it should work if you just manually remove all single-line comments first.
 
 ## Usage
 
@@ -64,7 +64,7 @@ Not supported, since webpak uses single-line comments in the built file that mes
 ## Tips
 
 - Use the file explorer's search bar to look for NPCs by name.
-- KOTFE and KOTET chapters are in `cnv.cnv.exp.seasons.01` and `cnv.exp.seasons.02`, respectively.
+- KOTFE and KOTET chapters are in `cnv.exp.seasons.01` and `cnv.exp.seasons.02`, respectively.
 - (At least some of) Post-knights companion conversations are in `cnv.alliance`
 - Most, if not all, basegame conversations are in `cnv.location`.
   - Basegame companion (and companion quest) conversations are in `cnv.location.companion_characters`.
