@@ -2,7 +2,7 @@ import { getCurrentPage } from '../elementFinders';
 import { extractCurrentPage } from '../extract/cnvDataTable';
 import { Conversations, TableRow } from '../types';
 import { getCnvNodes } from './cnvNodes';
-import { parseArrayUnorder } from './utils';
+import { parseArrayUnorder, parseToValues } from './utils';
 
 function parseCnvTree(data: TableRow): Conversations {
   const cnvNodeData = data.children.get('cnvTreeDialogNodes_Prototype');
@@ -53,13 +53,18 @@ function parseCnvTree(data: TableRow): Conversations {
     );
   });
 
-  const parentlessNodeIds: string[] = [];
+  const rootNodeData = data.children
+    .get('cnvTreeRootNode_Prototype')
+    ?.children.get('cnvChildNodes');
+  const topLevelNodeIds = new Set<string>(
+    rootNodeData ? parseToValues(parseArrayUnorder(rootNodeData)) : []
+  );
 
   //prune useless nodes
   //and find parentless nodes
   cnvNodes.forEach((cnvNode) => {
     if (cnvNode.parents.size === 0) {
-      parentlessNodeIds.push(cnvNode.id);
+      topLevelNodeIds.add(cnvNode.id);
     }
 
     if (
@@ -88,7 +93,9 @@ function parseCnvTree(data: TableRow): Conversations {
     }
   });
 
-  return [cnvNodes, parentlessNodeIds];
+  topLevelNodeIds.forEach((id) => cnvNodes.get(id)?.parents.add('root'));
+
+  return [cnvNodes, Array.from(topLevelNodeIds)];
 }
 
 export function parseCurrentCnvTree() {
