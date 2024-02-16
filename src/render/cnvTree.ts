@@ -1,6 +1,7 @@
 import { cnvTreeCSS } from '../cnvTreeStyles';
 import { getCurrentCnvContainer } from '../elementFinders';
 import { parseCurrentCnvTree } from '../parse/cnvTree';
+import { genericLines } from '../parse/genericLines';
 import { Conversations } from '../types';
 import {
   appendSpanWithText,
@@ -50,12 +51,12 @@ function renderCnvNodeLine(
 ) {
   if (!text) return false;
 
-  const textParts = text.replace('💬︎', '').split('\n');
+  const textParts = text.split('\n');
 
   if (isPlayer && (textParts.length > 1 || generic)) {
     appendSpanWithText(
       parent,
-      `Option: ${textParts[1] || textParts[0]}`,
+      `Option: ${textParts[1] || textParts[0]}`.replace('💬︎', ''),
       'cnv-option'
     );
   }
@@ -68,7 +69,9 @@ function renderCnvNodeLine(
 
   appendSpanWithText(
     parent,
-    generic ? `- generic ${generic}` : `- ${textParts[0]}`,
+    `- ${
+      generic ? genericLines.get(generic) || `generic ${generic}` : textParts[0]
+    }`.replace('💬︎', ''),
     generic ? 'cnv-generic' : 'cnv-text'
   );
 
@@ -101,7 +104,7 @@ function renderCnvNodeReactions(
       getName(reactor),
       reaction
     );
-    
+
     const trow = document.createElement('tr');
 
     const companionTd = document.createElement('td');

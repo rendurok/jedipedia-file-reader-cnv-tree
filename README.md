@@ -47,14 +47,24 @@ Not supported, since webpack uses single-line comments in the built file that me
 
 ## Usage
 
-0. Use the [file reader's](https://swtor.jedipedia.net/reader) instructions to load all files from the game's Assets folder.
-1. Switch to the "Nodes" tab from the top left, and wait for the loading spinner next to the search bar to go away.
-2. In the "Nodes" tab, use the tree explorer on the left to open any conversation (found under the `cnv` node).
-3. With a conversation page open, press the "CNV" button on the top left navbar to improve the display.
+### Load Files
+  1. Use the [file reader's](https://swtor.jedipedia.net/reader) instructions to load all files from the game's Assets folder.
+  2. Switch to the "Nodes" tab from the top left, and wait for the loading spinner next to the search bar to go away.
+
+### Parse Generic Lines
+  1. Open `cnv.misc.generic_lines`.
+  2. Open the menu by pressing the ">" next to the "CNV"-button on the navbar.
+  3. Select your chosen class and gender.
+  4. Click the big "Parse Conversations"-button.
+
+To get generic lines for a different class or gender, just repeat the steps. The generic lines will be saved until you parse them again, or close or refresh the page.
+
+### View Conversations
+  1. In the "Nodes" tab, use the tree explorer on the left to open any conversation (found under the `cnv` node).
+  2. With a conversation page open, press the "CNV" button on the top left navbar to improve the display.
 
 ## Limitations
 
-- Generic lines (e.g. "I suppose I can lower myself to do this.") are not parsed, though this could be possible in the future.
 - NPC and companion names aren't fully parsed, and are usually just displayed as snake_case, though sometimes different. These names could possibly be parsed, but it's not a priority.
 - Sometimes the DS/LS point gain is displayed incorrectly or only partially due to me not completely understanding how it's calculated, or old leftover code. Any gains displayed that are just numbers should be accurate. It is unlikely this will ever be fixed.
 - Conversation reaction types are based on a manual LUT, so sometimes they might just be a big number. I haven't found a way to automatically parse them, as the ids in the conversation data do not match with any that are in `global/resources/en-us/str/gui/conversationreactions.stb`. Luckily there does seem to only be a handful of different types, though.

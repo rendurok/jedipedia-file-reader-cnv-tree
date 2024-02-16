@@ -64,3 +64,21 @@ export function parseReaction(
 
   return [reactor, parsedReaction];
 }
+
+export function appendRadio(parent: Element, name: string, values: string[]) {
+  values.forEach((value) => {
+    const input = document.createElement('input');
+    input.type = 'radio';
+    input.name = name;
+    input.id = value;
+    input.value = value;
+
+    const label = document.createElement('label');
+    label.htmlFor = value;
+    label.appendChild(document.createTextNode(value));
+
+    parent.appendChild(input);
+    parent.appendChild(label);
+    parent.appendChild(document.createElement('br'));
+  });
+}

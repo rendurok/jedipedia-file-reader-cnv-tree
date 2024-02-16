@@ -9,6 +9,19 @@ export const miscLUT = new Map<string, string>([
   ['cnvForceRewardTypeLightSide#', '1'],
 ]);
 
+export const cnvConditions = new Map([
+  ['qst.utility.class.is_jedi_knight🔗︎', 'knight'],
+  ['qst.utility.class.is_jedi_wizard🔗︎', 'consular'],
+  ['qst.utility.class.is_trooper🔗︎', 'trooper'],
+  ['qst.utility.class.is_smuggler🔗︎', 'smuggler'],
+  ['qst.utility.class.is_sith_warrior🔗︎', 'warrior'],
+  ['qst.utility.class.is_sith_sorcerer🔗︎', 'inquisitor'],
+  ['qst.utility.class.is_bounty_hunter🔗︎', 'hunter'],
+  ['qst.utility.class.is_spy🔗︎', 'agent'],
+  ['qst.utility.misc.is_male🔗︎', 'male'],
+  ['qst.utility.misc.is_female🔗︎', 'female'],
+]);
+
 export const cnvReactionTypes = new Map([
   ['2529429825125611235', '<<1>> approves.'],
   ['4428691168655495967', '<<1>> approves.'],

@@ -2,14 +2,14 @@ import { cnvReactionTypes, miscLUT } from '../lut';
 import { CnvNode, TableRow } from '../types';
 import { parseArrayUnorder, parseToValues } from './utils';
 
-function getCnvNodeId(cnvNodeRow: TableRow) {
+export function getCnvNodeId(cnvNodeRow: TableRow) {
   const id = cnvNodeRow.children.get('cnvNodeNumber')?.value;
   if (!id) throw new Error('cnv node row has no id');
 
   return id;
 }
 
-function getCnvNodeText(cnvNodeRow: TableRow, id: string) {
+export function getCnvNodeText(cnvNodeRow: TableRow, id: string) {
   return (
     cnvNodeRow.children
       .get('locTextRetrieverMap')
@@ -18,19 +18,19 @@ function getCnvNodeText(cnvNodeRow: TableRow, id: string) {
   );
 }
 
-function getCnvNodeGeneric(cnvNodeRow: TableRow) {
+export function getCnvNodeGeneric(cnvNodeRow: TableRow) {
   return cnvNodeRow.children.get('cnvGenericNodeNumber')?.value;
 }
 
-function getCnvNodeIsPlayer(cnvNodeRow: TableRow) {
+export function getCnvNodeIsPlayer(cnvNodeRow: TableRow) {
   return cnvNodeRow.children.get('cnvIsPcNode')?.value === 'true';
 }
 
-function getCnvNodeSpeaker(cnvNodeRow: TableRow) {
+export function getCnvNodeSpeaker(cnvNodeRow: TableRow) {
   return cnvNodeRow.children.get('cnvSpeaker')?.value || '';
 }
 
-function getCnvNodeForce(cnvNodeRow: TableRow) {
+export function getCnvNodeForce(cnvNodeRow: TableRow) {
   const forceTypeData =
     cnvNodeRow.children.get('cnvRewardForceType')?.value || '';
   const forceAmountData =
@@ -43,7 +43,7 @@ function getCnvNodeForce(cnvNodeRow: TableRow) {
     : 0;
 }
 
-function getCnvNodeReactions(cnvNodeRow: TableRow) {
+export function getCnvNodeReactions(cnvNodeRow: TableRow) {
   const reactionsRow = cnvNodeRow.children.get('cnvNodeCompanionReactions');
   if (!reactionsRow) return [];
 
@@ -61,7 +61,7 @@ function getCnvNodeReactions(cnvNodeRow: TableRow) {
   );
 }
 
-function getCnvNodeChildren(cnvNodeRow: TableRow) {
+export function getCnvNodeChildren(cnvNodeRow: TableRow) {
   const childrenRow = cnvNodeRow.children.get('cnvChildNodes');
   if (!childrenRow) return [];
 

@@ -1,4 +1,5 @@
 //TODO: use actual css file
+
 export const cnvTreeCSS = `
 ul{
   display:inline-block; float: left; clear: left;
@@ -137,5 +138,49 @@ ul>li>span{
 
 .cnv-highlight{
   background: purple;
+}
+`;
+
+export const menuCSS = `
+#cnv-menu-collapser {
+  -webkit-appearance: none;
+  appearance: none;
+
+  width: 1.5em;
+  border: 2px solid #225c81;
+  border-radius: 5px;
+  padding: 3px;
+  cursor: pointer;
+}
+
+#cnv-menu-collapser::before {
+  display: grid;
+  place-content: center;
+  content: "v";
+}
+
+#cnv-menu-collapser:checked::before {
+  content: ">";
+}
+
+#cnv-menu-collapser:checked~#cnv-menu {
+  display:none
+}
+
+#cnv-menu {
+  position: absolute; 
+  z-index: 10;
+  background: #01060a;
+  border: 1px solid #225c81;
+  padding: 4px;
+}
+
+#cnv-menu>form>fieldset {
+  display: flex;
+  column-gap: 10px;
+}
+
+#cnv-menu>form button {
+  width: min-content;
 }
 `;
