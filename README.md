@@ -55,7 +55,7 @@ Not supported, since webpack uses single-line comments in the built file that me
   1. Open `cnv.misc.generic_lines`.
   2. Open the menu by pressing the ">" next to the "CNV"-button on the navbar.
   3. Select your chosen class and gender.
-  4. Click the big "Parse Conversations"-button.
+  4. Click the big "Parse Generics"-button.
 
 To get generic lines for a different class or gender, just repeat the steps. The generic lines will be saved until you parse them again, or close or refresh the page.
 
