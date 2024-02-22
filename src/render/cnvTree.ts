@@ -2,7 +2,7 @@ import { cnvTreeCSS } from '../cnvTreeStyles';
 import { getCurrentCnvContainer } from '../elementFinders';
 import { parseCurrentCnvTree } from '../parse/cnvTree';
 import { genericLines } from '../parse/genericLines';
-import { Conversations } from '../types';
+import { CnvNode, Conversations } from '../types';
 import {
   appendSpanWithText,
   clearChildren,
@@ -192,35 +192,73 @@ function renderCnvNodes(
   [cnvNodes, topLevelIds]: Conversations,
   listElement: Element
 ) {
-  const renderQueue: [string, Element][] = topLevelIds
-    .slice()
-    .reverse()
-    .map((id) => [id, listElement]);
+  const renderQueue: [string, Element][] = topLevelIds.map((id) => [
+    id,
+    listElement,
+  ]);
   const timesLinked = new Map<string, number>();
+  const linkResolved = new Map<string, Element | true>();
 
-  while (true) {
-    const nextNode = renderQueue.pop();
-    if (!nextNode) return;
-    const [id, parentElement] = nextNode;
-    const cnvNode = cnvNodes.get(id);
+  function renderLinkNode(toId: string, parentElement: Element) {
+    const linkElement = createCnvNode({ link: toId });
+    parentElement.appendChild(linkElement);
 
-    if (cnvNode && cnvNode.parents.size - (timesLinked.get(id) || 0) <= 1) {
-      const hasChildren = (cnvNode.children.size || 0) > 0;
+    timesLinked.set(toId, (timesLinked.get(toId) || 0) + 1);
+    if (linkResolved.get(toId) !== true) linkResolved.set(toId, linkElement);
+  }
 
-      const cnvNodeElement = createCnvNode(cnvNode, hasChildren);
-      parentElement.appendChild(cnvNodeElement);
+  function renderCnvNode(id: string, cnvNode: CnvNode, parentElement: Element) {
+    linkResolved.set(id, true);
+    const hasChildren = cnvNode.children.size > 0;
 
-      if (hasChildren) {
-        const childList = renderChildList(cnvNodeElement);
-        Array.from(cnvNode.children.values())
-          .slice()
-          .reverse()
-          .forEach((id) => renderQueue.push([id, childList]));
-      }
-    } else {
-      timesLinked.set(id, (timesLinked.get(id) || 0) + 1);
-      parentElement.appendChild(createCnvNode({ link: id }));
+    const cnvNodeElement = createCnvNode(cnvNode, hasChildren);
+    parentElement.appendChild(cnvNodeElement);
+
+    if (hasChildren) {
+      const childList = renderChildList(cnvNodeElement);
+      Array.from(cnvNode.children)
+        .reverse()
+        .forEach((id) => renderQueue.push([id, childList]));
     }
+  }
+
+  function renderLoop() {
+    while (true) {
+      const nextNode = renderQueue.pop();
+      if (!nextNode) break;
+      const [id, parentElement] = nextNode;
+      const cnvNode = cnvNodes.get(id);
+
+      if (cnvNode && cnvNode.parents.size - (timesLinked.get(id) || 0) === 1) {
+        renderCnvNode(id, cnvNode, parentElement);
+      } else {
+        renderLinkNode(id, parentElement);
+      }
+    }
+  }
+
+  renderLoop();
+
+  // deal with possible cycles
+  while (true) {
+    const nextNode = <[string, Element] | undefined>(
+      Array.from(linkResolved).find(([_, resolved]) => resolved !== true)
+    );
+    if (!nextNode) break;
+    const [id, linkElement] = nextNode;
+    const cnvNode = cnvNodes.get(id);
+    if (!cnvNode) {
+      linkResolved.delete(id);
+      continue;
+    }
+
+    const parentElement = linkElement.parentElement;
+    if (!parentElement) continue;
+    linkElement.remove();
+
+    renderCnvNode(id, cnvNode, parentElement);
+    timesLinked.set(id, Infinity);
+    renderLoop();
   }
 }
 
