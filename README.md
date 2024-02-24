@@ -8,6 +8,7 @@ Features include:
 - Dark-/light-side gain
 - Companion (and other) reactions
 - Click a link to jump to the corresponding node in the tree
+- Parsing of generic lines for chosen class and gender
 
 Made with [pboymt's userscript-typescript-template](https://github.com/pboymt/userscript-typescript-template).
 
