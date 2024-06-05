@@ -39,7 +39,8 @@ export function getCnvNodeForce(cnvNodeRow: TableRow) {
 
   const forceNumber = Number(miscLUT.get(forceTypeData)) * forceAmountNumber;
   return forceAmountData || forceTypeData
-    ? forceNumber || `${forceTypeData || 'unknown'}~${forceAmountNumber || forceAmountData}`
+    ? forceNumber ||
+        `${forceTypeData || 'unknown'}~${forceAmountNumber || forceAmountData}`
     : 0;
 }
 
@@ -51,7 +52,7 @@ export function getCnvNodeReactions(cnvNodeRow: TableRow) {
     parseArrayUnorder(reactionsRow)?.map((reaction): [string, string] => {
       const reactionType = String(
         reaction.children.get('cnvNodeReactionType')?.value
-      );
+      ).split(' = ')[0];
 
       return [
         String(reaction.children.get('cnvNodeReactionCompanion')?.value),
