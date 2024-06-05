@@ -197,18 +197,29 @@ function renderCnvNodes(
     listElement,
   ]);
   const timesLinked = new Map<string, number>();
-  const linkResolved = new Map<string, Element | true>();
+  const links = new Map<
+    string,
+    { resolved: boolean; linkElement?: HTMLLIElement }
+  >();
 
   function renderLinkNode(toId: string, parentElement: Element) {
     const linkElement = createCnvNode({ link: toId });
     parentElement.appendChild(linkElement);
 
     timesLinked.set(toId, (timesLinked.get(toId) || 0) + 1);
-    if (linkResolved.get(toId) !== true) linkResolved.set(toId, linkElement);
+
+    const link = links.get(toId);
+    if (!link) {
+      links.set(toId, { resolved: false, linkElement });
+    } else if (!link.resolved) {
+      link.linkElement = linkElement;
+    }
   }
 
   function renderCnvNode(id: string, cnvNode: CnvNode, parentElement: Element) {
-    linkResolved.set(id, true);
+    const link = links.get(id);
+    if (link) link.resolved = true;
+
     const hasChildren = cnvNode.children.size > 0;
 
     const cnvNodeElement = createCnvNode(cnvNode, hasChildren);
@@ -229,7 +240,11 @@ function renderCnvNodes(
       const [id, parentElement] = nextNode;
       const cnvNode = cnvNodes.get(id);
 
-      if (cnvNode && cnvNode.parents.size - (timesLinked.get(id) || 0) === 1) {
+      if (
+        !links.get(id)?.resolved &&
+        cnvNode &&
+        cnvNode.parents.size - (timesLinked.get(id) || 0) === 1
+      ) {
         renderCnvNode(id, cnvNode, parentElement);
       } else {
         renderLinkNode(id, parentElement);
@@ -241,21 +256,19 @@ function renderCnvNodes(
 
   // deal with possible cycles
   while (true) {
-    const nextNode = <[string, Element] | undefined>(
-      Array.from(linkResolved).find(([_, resolved]) => resolved !== true)
-    );
-    if (!nextNode) break;
-    const [id, linkElement] = nextNode;
+    const nextLink = Array.from(links).find(([_, { resolved }]) => !resolved);
+    if (!nextLink) break;
+    const [id, link] = nextLink;
     const cnvNode = cnvNodes.get(id);
-    if (!cnvNode) {
-      linkResolved.delete(id);
+    const parentElement = link.linkElement?.parentElement;
+
+    if (!cnvNode || !parentElement) {
+      links.delete(id);
       continue;
     }
 
-    const parentElement = linkElement.parentElement;
-    if (!parentElement) continue;
-    linkElement.remove();
-
+    link.linkElement?.remove();
+    link.resolved = true;
     renderCnvNode(id, cnvNode, parentElement);
     timesLinked.set(id, Infinity);
     renderLoop();
