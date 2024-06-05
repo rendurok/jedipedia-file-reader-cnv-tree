@@ -30,16 +30,17 @@ function parseCnvTree(data: TableRow): Conversations {
   );
 
   //set parents and resolve links
-  //children is a set after this
   cnvNodes.forEach((node) => {
     node.children = new Set(
-      Array.from(node.children.values()).map((childId) => {
+      Array.from(node.children).map((childId) => {
         let id = childId;
         let child = cnvNodes.get(id);
 
         if (!child) {
-          id = cnvLinks.get(childId) || '';
-          child = cnvNodes.get(id);
+          while (id && !child) {
+            id = cnvLinks.get(id) || '';
+            child = cnvNodes.get(id);
+          }
 
           if (!child) {
             console.warn(`node ${childId} not found`);
@@ -59,41 +60,59 @@ function parseCnvTree(data: TableRow): Conversations {
   const topLevelNodeIds = new Set<string>(
     rootNodeData ? parseToValues(parseArrayUnorder(rootNodeData)) : []
   );
+  topLevelNodeIds.forEach((id) => cnvNodes.get(id)?.parents.add('root'));
 
+  //find parentless nodes
   //prune useless nodes
-  //and find parentless nodes
   cnvNodes.forEach((cnvNode) => {
-    if (cnvNode.parents.size === 0) {
+    if (!cnvNode.parents.size) {
+      cnvNode.parents.add('root');
       topLevelNodeIds.add(cnvNode.id);
     }
+
+    /*
+    TODO:
+    Instead of not pruning root and "cross" nodes, 
+    maybe look at child conditions to find otherwise 
+    useless nodes that nonetheless are sensible to keep,
+    as they function as a kind of logical aggregator
+    */
 
     if (
       !cnvNode.text &&
       !cnvNode.force &&
       !cnvNode.reactions.length &&
-      cnvNode.parents.size !== 0 &&
+      !cnvNode.parents.has('root') &&
       cnvNode.children.size !== 0 &&
       !(cnvNode.parents.size > 1 && cnvNode.children.size > 1)
     ) {
-      cnvNode.parents.forEach((parentId) => {
-        const parent = cnvNodes.get(parentId);
-        if (!parent) return;
+      topLevelNodeIds.delete(cnvNode.id);
 
-        parent.children.delete(cnvNode.id);
+      cnvNode.children.forEach((childId) => {
+        const childNode = cnvNodes.get(childId);
+        if (!childNode) return;
 
-        cnvNode.children.forEach((childId) => {
-          parent.children.add(childId);
-          cnvNodes.get(childId)?.parents.add(parentId);
+        childNode.parents.delete(cnvNode.id);
+        cnvNode.parents.forEach((parentId) => {
+          childNode.parents.add(parentId);
+
+          if (parentId === 'root') {
+            topLevelNodeIds.add(childId);
+          }
         });
       });
 
-      cnvNode.children.forEach((childId) => {
-        cnvNodes.get(childId)?.parents.delete(cnvNode.id);
+      cnvNode.parents.forEach((parentId) => {
+        const parentNode = cnvNodes.get(parentId);
+        if (!parentNode) return;
+
+        parentNode.children.delete(cnvNode.id);
+        cnvNode.children.forEach((childId) => {
+          parentNode.children.add(childId);
+        });
       });
     }
   });
-
-  topLevelNodeIds.forEach((id) => cnvNodes.get(id)?.parents.add('root'));
 
   return [cnvNodes, Array.from(topLevelNodeIds)];
 }
