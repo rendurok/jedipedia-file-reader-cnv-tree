@@ -106,6 +106,9 @@ ul>li:last-child:before{
   color: purple;
   cursor: pointer;
 }
+.cnv-cnd{
+  color: #e173ff;
+}
 
 .cnv-node>span{
   padding-right: .25em

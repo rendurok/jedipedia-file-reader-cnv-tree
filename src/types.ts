@@ -6,7 +6,7 @@ export type TableRow = {
 
 export type CnvNode = {
   id: string;
-  children: Set<string>;
+  children: string[];
   parents: Set<string>;
   text: string;
   force: string | number;
@@ -14,6 +14,9 @@ export type CnvNode = {
   speaker: string;
   generic?: string;
   reactions: [string, string][];
+  actionString: string;
+  conditionString: string;
+  conditionMatters: boolean;
 };
 
 export type Conversations = [Map<string, CnvNode>, string[]];

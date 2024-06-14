@@ -1,6 +1,6 @@
 {
   "name": "jedipedia-file-reader-cnv-tree",
-  "version": "3.2",
+  "version": "4.0",
   "description": "Improves the conversation tree display of the Jedipedia File Reader.",
   "main": "userscript/index.user.js",
   "scripts": {

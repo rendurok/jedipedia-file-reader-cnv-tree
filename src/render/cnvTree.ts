@@ -25,6 +25,14 @@ function renderCnvNodeId(parent: Element, id?: string) {
   return true;
 }
 
+function renderCnvNodeCondition(parent: Element, condition: string) {
+  appendSpanWithText(
+    parent,
+    condition.replace('==i', '==').replace('==b', '=='),
+    'cnv-cnd'
+  );
+}
+
 function renderCnvNodeForce(parent: Element, force?: string | number) {
   if (!force) return false;
 
@@ -88,11 +96,31 @@ function renderCnvLink(parent: HTMLElement, link?: string) {
   return true;
 }
 
+function createReactionRow(reactor: string, reaction: string) {
+  const [parsedReactor, parsedReaction] = parseReaction(
+    getName(reactor),
+    reaction
+  );
+
+  const trow = document.createElement('tr');
+
+  const companionTd = document.createElement('td');
+  companionTd.appendChild(document.createTextNode(parsedReactor));
+  trow.appendChild(companionTd);
+
+  const reactionTd = document.createElement('td');
+  reactionTd.appendChild(document.createTextNode(parsedReaction));
+  trow.appendChild(reactionTd);
+
+  return trow;
+}
+
 function renderCnvNodeReactions(
   parent: Element,
-  reactions?: [string, string][]
+  reactions: [string, string][],
+  actionString: string
 ) {
-  if (!reactions || !reactions.length) return false;
+  if (!reactions.length && !actionString) return false;
 
   const table = document.createElement('table');
   const tbody = document.createElement('tbody');
@@ -100,23 +128,17 @@ function renderCnvNodeReactions(
   table.className = 'cnv-reactions';
 
   reactions.forEach(([reactor, reaction]) => {
-    const [parsedReactor, parsedReaction] = parseReaction(
-      getName(reactor),
-      reaction
-    );
-
-    const trow = document.createElement('tr');
-
-    const companionTd = document.createElement('td');
-    companionTd.appendChild(document.createTextNode(parsedReactor));
-    trow.appendChild(companionTd);
-
-    const reactionTd = document.createElement('td');
-    reactionTd.appendChild(document.createTextNode(parsedReaction));
-    trow.appendChild(reactionTd);
-
-    tbody.appendChild(trow);
+    tbody.appendChild(createReactionRow(reactor, reaction));
   });
+
+  if (actionString) {
+    const trow = createReactionRow(
+      'SET VARIABLE',
+      actionString.replace('==i', '=').replace('==b', '=')
+    );
+    trow.classList.add('cnv-cnd');
+    tbody.appendChild(trow);
+  }
 
   table.appendChild(tbody);
   parent.appendChild(table);
@@ -133,17 +155,10 @@ function createCnvNode(
     isPlayer,
     generic,
     reactions,
-    link,
-  }: {
-    id?: string;
-    text?: string;
-    force?: string | number;
-    speaker?: string;
-    isPlayer?: boolean;
-    generic?: string;
-    reactions?: [string, string][];
-    link?: string;
-  },
+    actionString,
+    conditionString,
+    conditionMatters,
+  }: CnvNode,
   hasChildren?: boolean
 ) {
   const newElement = document.createElement('li');
@@ -158,6 +173,12 @@ function createCnvNode(
   newElement.appendChild(span);
 
   const hasId = renderCnvNodeId(span, id);
+  if (conditionMatters && conditionString) {
+    renderCnvNodeCondition(span, conditionString);
+    if (text) {
+      span.appendChild(document.createElement('br'));
+    }
+  }
   if (hasId) {
     span.classList.add('cnv-node');
 
@@ -169,14 +190,10 @@ function createCnvNode(
     }
   } else {
     span.classList.add('cnv-util');
-
-    const isLink = renderCnvLink(span, link);
-    if (!isLink) {
-      span.appendChild(document.createTextNode(text ? text : 'node'));
-    }
+    span.appendChild(document.createTextNode(text ? text : 'node'));
   }
 
-  renderCnvNodeReactions(span, reactions);
+  renderCnvNodeReactions(span, reactions, actionString);
 
   return newElement;
 }
@@ -186,6 +203,17 @@ function renderChildList(parent: Element) {
   parent.appendChild(childList);
 
   return childList;
+}
+
+function createLinkNode(link: string) {
+  const newElement = document.createElement('li');
+  const span = document.createElement('span');
+  span.classList.add('cnv-childless');
+  newElement.appendChild(span);
+  span.classList.add('cnv-util');
+  renderCnvLink(span, link);
+
+  return newElement;
 }
 
 function renderCnvNodes(
@@ -203,7 +231,7 @@ function renderCnvNodes(
   >();
 
   function renderLinkNode(toId: string, parentElement: Element) {
-    const linkElement = createCnvNode({ link: toId });
+    const linkElement = createLinkNode(toId);
     parentElement.appendChild(linkElement);
 
     timesLinked.set(toId, (timesLinked.get(toId) || 0) + 1);
@@ -220,14 +248,15 @@ function renderCnvNodes(
     const link = links.get(id);
     if (link) link.resolved = true;
 
-    const hasChildren = cnvNode.children.size > 0;
+    const hasChildren = cnvNode.children.length > 0;
 
     const cnvNodeElement = createCnvNode(cnvNode, hasChildren);
     parentElement.appendChild(cnvNodeElement);
 
     if (hasChildren) {
       const childList = renderChildList(cnvNodeElement);
-      Array.from(cnvNode.children)
+      cnvNode.children
+        .slice(0)
         .reverse()
         .forEach((id) => renderQueue.push([id, childList]));
     }
@@ -275,7 +304,10 @@ function renderCnvNodes(
   }
 }
 
-export function renderConversations(conversations: Conversations) {
+export function renderConversations(
+  conversations: Conversations,
+  reverse: boolean
+) {
   const container = getCurrentCnvContainer();
   clearChildren(container);
   const shadowContainer = document.createElement('div');
@@ -296,9 +328,13 @@ export function renderConversations(conversations: Conversations) {
   tree.className = 'tree';
   conversationDiv.appendChild(tree);
 
+  //bubblegum-bandaid feature because I'm annoyed
+  //at the formatting of some conversation data
+  if (reverse) conversations[1].push(...conversations[1].splice(0, 1));
+
   renderCnvNodes(conversations, tree);
 }
 
-export function renderCurrentConversations() {
-  renderConversations(parseCurrentCnvTree());
+export function renderCurrentConversations(e: Event) {
+  renderConversations(parseCurrentCnvTree(), (<any>e).shiftKey);
 }
