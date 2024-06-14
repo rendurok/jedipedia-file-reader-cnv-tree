@@ -1,5 +1,6 @@
 import { cnvReactionTypes, miscLUT } from '../lut';
 import { CnvNode, TableRow } from '../types';
+import { readableCondition } from './conditions';
 import { parseArrayUnorder, parseToValues } from './utils';
 
 export function getCnvNodeId(cnvNodeRow: TableRow) {
@@ -69,6 +70,46 @@ export function getCnvNodeChildren(cnvNodeRow: TableRow) {
   return parseToValues(parseArrayUnorder(childrenRow));
 }
 
+export function getCnvNodeConditions(cnvNodeRow: TableRow) {
+  const cndCompiledRow = cnvNodeRow.children.get('cnvConditionCompiled');
+  const conditions = cndCompiledRow
+    ? parseToValues(parseArrayUnorder(cndCompiledRow))
+    : [];
+
+  const actionRow = cnvNodeRow.children.get('cnvActionExpressionCompiled');
+  const actionExpression = actionRow
+    ? parseToValues(parseArrayUnorder(actionRow))
+    : [];
+
+  if (
+    cnvNodeRow.children.get('cnvNodeConditionType')?.value ===
+    'cnvConditionType_Conditional#'
+  ) {
+    const conditional = cnvNodeRow.children.get(
+      'cnvNodeRequiredConditional'
+    )?.value;
+
+    if (conditional) {
+      const compiledLength = conditions.length;
+      conditions.push(conditional);
+
+      if (
+        cnvNodeRow.children.get('cnvNodeIsConditionNegated')?.value === 'true'
+      ) {
+        conditions.push('(10)'); // !
+      }
+      if (compiledLength) {
+        conditions.push('(8)'); // &&
+      }
+    }
+  }
+
+  return {
+    actionString: readableCondition(actionExpression),
+    conditionString: readableCondition(conditions),
+  };
+}
+
 export function getCnvNodes(cnvData: TableRow) {
   return new Map<string, CnvNode>(
     parseArrayUnorder(cnvData).map((cnvNodeRow) => {
@@ -77,7 +118,7 @@ export function getCnvNodes(cnvData: TableRow) {
         id,
         {
           id,
-          children: new Set(getCnvNodeChildren(cnvNodeRow)),
+          children: getCnvNodeChildren(cnvNodeRow),
           parents: new Set<string>(),
           text: getCnvNodeText(cnvNodeRow, id),
           force: getCnvNodeForce(cnvNodeRow),
@@ -85,6 +126,8 @@ export function getCnvNodes(cnvData: TableRow) {
           speaker: getCnvNodeSpeaker(cnvNodeRow),
           generic: getCnvNodeGeneric(cnvNodeRow),
           reactions: getCnvNodeReactions(cnvNodeRow),
+          ...getCnvNodeConditions(cnvNodeRow),
+          conditionMatters: false,
         },
       ];
     })

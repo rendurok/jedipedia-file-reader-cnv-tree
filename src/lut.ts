@@ -9,7 +9,7 @@ export const miscLUT = new Map<string, string>([
   ['cnvForceRewardTypeLightSide#', '1'],
 ]);
 
-export const cnvConditions = new Map([
+export const cnvClassGenderConditions = new Map([
   ['qst.utility.class.is_jedi_knight🔗︎', 'knight'],
   ['qst.utility.class.is_jedi_wizard🔗︎', 'consular'],
   ['qst.utility.class.is_trooper🔗︎', 'trooper'],
@@ -20,6 +20,39 @@ export const cnvConditions = new Map([
   ['qst.utility.class.is_spy🔗︎', 'agent'],
   ['qst.utility.misc.is_male🔗︎', 'male'],
   ['qst.utility.misc.is_female🔗︎', 'female'],
+]);
+
+export const classesImp = ['warrior', 'inquisitor', 'hunter', 'agent'];
+export const classesRep = ['knight', 'consular', 'trooper', 'smuggler'];
+
+export const cnvCndConstants = new Map([
+  ['0', '0'],
+  ['1', '1'],
+  ['3', '!='],
+  ['4', '>'],
+  ['5', '>='],
+  ['6', '<'],
+  ['7', '<='],
+  ['8', '&&'],
+  ['9', '||'],
+  ['10', '!'],
+  ['11', '==b'],
+  ['12', '==i'],
+  ['16', 'INT'],
+]);
+
+export const cnvCndOperators = new Set([
+  '!=',
+  '>',
+  '>=',
+  '<',
+  '<=',
+  '&&',
+  '||',
+  '!',
+  '==b',
+  '==i',
+  'INT',
 ]);
 
 export const cnvReactionTypes = new Map([

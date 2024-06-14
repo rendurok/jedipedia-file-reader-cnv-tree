@@ -1,6 +1,6 @@
 import { getCurrentPage } from '../elementFinders';
 import { extractCurrentPage } from '../extract/cnvDataTable';
-import { cnvConditions } from '../lut';
+import { cnvClassGenderConditions } from '../lut';
 import { TableRow } from '../types';
 import { getCnvNodeChildren, getCnvNodeId, getCnvNodeText } from './cnvNodes';
 import { parseArrayUnorder, parseToValues } from './utils';
@@ -14,7 +14,7 @@ function getCnvNodeConditionsBad(cnvNodeRow: TableRow): string[] {
   if (!conditionRow) return [];
 
   return parseToValues(parseArrayUnorder(conditionRow)).flatMap(
-    (v) => cnvConditions.get(v) || []
+    (v) => cnvClassGenderConditions.get(v) || []
   );
 }
 
