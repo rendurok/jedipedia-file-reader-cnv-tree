@@ -9,6 +9,8 @@ Features include:
 - Companion (and other) reactions
 - Click a link to jump to the corresponding node in the tree
 - Parsing of generic lines for chosen class and gender
+- Parsing of conditions
+- Parsing of variables set in the conversation
 
 Made with [pboymt's userscript-typescript-template](https://github.com/pboymt/userscript-typescript-template).
 
