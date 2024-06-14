@@ -1,4 +1,8 @@
-export function addNavbarButton(id: string, text: string, fn: () => void) {
+export function addNavbarButton(
+  id: string,
+  text: string,
+  fn: (e: Event) => void
+) {
   const existingButton = document.querySelector<HTMLButtonElement>(`#${id}`);
   if (existingButton) {
     existingButton.onclick = fn;

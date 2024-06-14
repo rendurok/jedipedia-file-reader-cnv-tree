@@ -275,7 +275,10 @@ function renderCnvNodes(
   }
 }
 
-export function renderConversations(conversations: Conversations) {
+export function renderConversations(
+  conversations: Conversations,
+  reverse: boolean
+) {
   const container = getCurrentCnvContainer();
   clearChildren(container);
   const shadowContainer = document.createElement('div');
@@ -296,9 +299,13 @@ export function renderConversations(conversations: Conversations) {
   tree.className = 'tree';
   conversationDiv.appendChild(tree);
 
+  //bubblegum-bandaid feature because I'm annoyed
+  //at the formatting of some conversation data
+  if (reverse) conversations[1].push(...conversations[1].splice(0, 1));
+
   renderCnvNodes(conversations, tree);
 }
 
-export function renderCurrentConversations() {
-  renderConversations(parseCurrentCnvTree());
+export function renderCurrentConversations(e: Event) {
+  renderConversations(parseCurrentCnvTree(), (<any>e).shiftKey);
 }
