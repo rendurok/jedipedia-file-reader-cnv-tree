@@ -46,17 +46,17 @@ export function getCnvNodeForce(cnvNodeRow: TableRow) {
 }
 
 export function getCnvNodeReactions(cnvNodeRow: TableRow) {
-  const reactionsRow = cnvNodeRow.children.get("cnvNodeCompanionReactions");
+  const reactionsRow = cnvNodeRow.children.get("cnvNpcReactions");
   if (!reactionsRow) return [];
 
   return (
     parseArrayUnorder(reactionsRow)?.map((reaction): [string, string] => {
       const reactionType = String(
-        reaction.children.get("cnvNodeReactionType")?.value
-      ).split(" = ")[0];
+        reaction.children.get("cnvReactionType")?.value?.match(/\d+/)?.[0]
+      );
 
       return [
-        String(reaction.children.get("cnvNodeReactionCompanion")?.value),
+        String(reaction.children.get("cnvReactionNpcId")?.value),
         cnvReactionTypes.get(reactionType) || reactionType,
       ];
     }) || []
