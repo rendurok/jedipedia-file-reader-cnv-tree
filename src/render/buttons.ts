@@ -10,11 +10,11 @@ export function addNavbarButton(
     return;
   }
 
-  const newButton = document.createElement('button');
-  newButton.appendChild(document.createTextNode('CNV'));
+  const newButton = document.createElement("button");
+  newButton.appendChild(document.createTextNode("CNV"));
   newButton.id = id;
   newButton.onclick = fn;
   newButton.textContent = text;
 
-  document.getElementById('navtop')?.appendChild(newButton);
+  document.getElementById("navtop")?.appendChild(newButton);
 }

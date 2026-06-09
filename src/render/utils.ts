@@ -1,4 +1,4 @@
-import { getCurrentCnvTree, getIdNode } from '../elementFinders';
+import { getCurrentCnvTree, getIdNode } from "../elementFinders";
 
 export function clearChildren(element: Element) {
   Array.from(element.children).forEach((c) => element.removeChild(c));
@@ -9,12 +9,12 @@ export function getName(longString?: string) {
   return (
     longString?.match(/^(?:.*\.)*([^🔗︎\.]+).*$/)?.[1] ||
     longString ||
-    'unknown'
+    "unknown"
   );
 }
 
 export function expandAll() {
-  Array.from(getCurrentCnvTree().getElementsByTagName('input')).forEach(
+  Array.from(getCurrentCnvTree().getElementsByTagName("input")).forEach(
     (input) => (input.checked = false)
   );
 }
@@ -25,7 +25,7 @@ export function expandTo(node: Element) {
   while (listElement && !listElement.offsetParent) {
     listElement = listElement?.parentElement?.parentElement || null;
 
-    const checkbox = listElement?.querySelector<HTMLInputElement>('input');
+    const checkbox = listElement?.querySelector<HTMLInputElement>("input");
     if (checkbox) checkbox.checked = false;
     else return;
   }
@@ -36,9 +36,9 @@ export function jumpToId(id: string) {
   if (!element) return alert(`node ${id} not found`);
 
   expandTo(element);
-  element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  element.classList.add('cnv-highlight');
-  setTimeout(() => element.classList.remove('cnv-highlight'), 5000);
+  element.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  element.classList.add("cnv-highlight");
+  setTimeout(() => element.classList.remove("cnv-highlight"), 5000);
 }
 
 export function appendSpanWithText(
@@ -46,7 +46,7 @@ export function appendSpanWithText(
   text: string,
   className: string
 ) {
-  const newSpan = document.createElement('span');
+  const newSpan = document.createElement("span");
   newSpan.appendChild(document.createTextNode(text));
   newSpan.className = className;
   parent.appendChild(newSpan);
@@ -59,7 +59,7 @@ export function parseReaction(
   reaction: string
 ): [string, string] {
   const parsedReaction = reaction
-    .replace('<<1>>', (_, offset) => (offset ? reactor : ''))
+    .replace("<<1>>", (_, offset) => (offset ? reactor : ""))
     .trim();
 
   return [reactor, parsedReaction];
@@ -67,18 +67,18 @@ export function parseReaction(
 
 export function appendRadio(parent: Element, name: string, values: string[]) {
   values.forEach((value) => {
-    const input = document.createElement('input');
-    input.type = 'radio';
+    const input = document.createElement("input");
+    input.type = "radio";
     input.name = name;
     input.id = value;
     input.value = value;
 
-    const label = document.createElement('label');
+    const label = document.createElement("label");
     label.htmlFor = value;
     label.appendChild(document.createTextNode(value));
 
     parent.appendChild(input);
     parent.appendChild(label);
-    parent.appendChild(document.createElement('br'));
+    parent.appendChild(document.createElement("br"));
   });
 }

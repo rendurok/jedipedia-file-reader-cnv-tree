@@ -1,26 +1,26 @@
-import { cnvTreeCSS } from '../cnvTreeStyles';
-import { getCurrentCnvContainer } from '../elementFinders';
-import { parseCurrentCnvTree } from '../parse/cnvTree';
-import { genericLines } from '../parse/genericLines';
-import { CnvNode, Conversations } from '../types';
+import { cnvTreeCSS } from "../cnvTreeStyles";
+import { getCurrentCnvContainer } from "../elementFinders";
+import { parseCurrentCnvTree } from "../parse/cnvTree";
+import { genericLines } from "../parse/genericLines";
+import { CnvNode, Conversations } from "../types";
 import {
   appendSpanWithText,
   clearChildren,
   getName,
   jumpToId,
   parseReaction,
-} from './utils';
+} from "./utils";
 
 function renderCnvNodeCheckbox(parent: Element) {
-  const checkbox = document.createElement('input');
-  checkbox.setAttribute('type', 'checkbox');
+  const checkbox = document.createElement("input");
+  checkbox.setAttribute("type", "checkbox");
   parent.appendChild(checkbox);
 }
 
 function renderCnvNodeId(parent: Element, id?: string) {
   if (!id) return false;
 
-  appendSpanWithText(parent, id, 'cnv-id');
+  appendSpanWithText(parent, id, "cnv-id");
 
   return true;
 }
@@ -28,8 +28,8 @@ function renderCnvNodeId(parent: Element, id?: string) {
 function renderCnvNodeCondition(parent: Element, condition: string) {
   appendSpanWithText(
     parent,
-    condition.replace('==i', '==').replace('==b', '=='),
-    'cnv-cnd'
+    condition.replace("==i", "==").replace("==b", "=="),
+    "cnv-cnd"
   );
 }
 
@@ -37,14 +37,14 @@ function renderCnvNodeForce(parent: Element, force?: string | number) {
   if (!force) return false;
 
   const isDark =
-    typeof force === 'number'
+    typeof force === "number"
       ? force < 0
-      : force.toLowerCase().includes('dark');
+      : force.toLowerCase().includes("dark");
 
   appendSpanWithText(
     parent,
-    `${isDark || !Number(force) ? '' : '+'}${force}`,
-    isDark ? 'cnv-force-dark' : 'cnv-force-light'
+    `${isDark || !Number(force) ? "" : "+"}${force}`,
+    isDark ? "cnv-force-dark" : "cnv-force-light"
   );
 
   return true;
@@ -59,28 +59,28 @@ function renderCnvNodeLine(
 ) {
   if (!text) return false;
 
-  const textParts = text.split('\n');
+  const textParts = text.split("\n");
 
   if (isPlayer && (textParts.length > 1 || generic)) {
     appendSpanWithText(
       parent,
-      `Option: ${textParts[1] || textParts[0]}`.replace('💬︎', ''),
-      'cnv-option'
+      `Option: ${textParts[1] || textParts[0]}`.replace("💬︎", ""),
+      "cnv-option"
     );
   }
 
   appendSpanWithText(
     parent,
-    isPlayer ? 'Player' : getName(speaker),
-    `cnv-speaker ${isPlayer ? 'cnv-player' : 'cnv-npc'}`
+    isPlayer ? "Player" : getName(speaker),
+    `cnv-speaker ${isPlayer ? "cnv-player" : "cnv-npc"}`
   );
 
   appendSpanWithText(
     parent,
     `- ${
       generic ? genericLines.get(generic) || `generic ${generic}` : textParts[0]
-    }`.replace('💬︎', ''),
-    generic ? 'cnv-generic' : 'cnv-text'
+    }`.replace("💬︎", ""),
+    generic ? "cnv-generic" : "cnv-text"
   );
 
   return true;
@@ -89,7 +89,7 @@ function renderCnvNodeLine(
 function renderCnvLink(parent: HTMLElement, link?: string) {
   if (!link) return false;
 
-  appendSpanWithText(parent, `Link to ${link}`, 'cnv-link');
+  appendSpanWithText(parent, `Link to ${link}`, "cnv-link");
 
   parent.onclick = () => jumpToId(link);
 
@@ -102,13 +102,13 @@ function createReactionRow(reactor: string, reaction: string) {
     reaction
   );
 
-  const trow = document.createElement('tr');
+  const trow = document.createElement("tr");
 
-  const companionTd = document.createElement('td');
+  const companionTd = document.createElement("td");
   companionTd.appendChild(document.createTextNode(parsedReactor));
   trow.appendChild(companionTd);
 
-  const reactionTd = document.createElement('td');
+  const reactionTd = document.createElement("td");
   reactionTd.appendChild(document.createTextNode(parsedReaction));
   trow.appendChild(reactionTd);
 
@@ -122,10 +122,10 @@ function renderCnvNodeReactions(
 ) {
   if (!reactions.length && !actionString) return false;
 
-  const table = document.createElement('table');
-  const tbody = document.createElement('tbody');
+  const table = document.createElement("table");
+  const tbody = document.createElement("tbody");
 
-  table.className = 'cnv-reactions';
+  table.className = "cnv-reactions";
 
   reactions.forEach(([reactor, reaction]) => {
     tbody.appendChild(createReactionRow(reactor, reaction));
@@ -133,10 +133,10 @@ function renderCnvNodeReactions(
 
   if (actionString) {
     const trow = createReactionRow(
-      'SET VARIABLE',
-      actionString.replace('==i', '=').replace('==b', '=')
+      "SET VARIABLE",
+      actionString.replace("==i", "=").replace("==b", "=")
     );
-    trow.classList.add('cnv-cnd');
+    trow.classList.add("cnv-cnd");
     tbody.appendChild(trow);
   }
 
@@ -161,13 +161,13 @@ function createCnvNode(
   }: CnvNode,
   hasChildren?: boolean
 ) {
-  const newElement = document.createElement('li');
-  const span = document.createElement('span');
+  const newElement = document.createElement("li");
+  const span = document.createElement("span");
 
   if (hasChildren) {
     renderCnvNodeCheckbox(newElement);
   } else {
-    span.classList.add('cnv-childless');
+    span.classList.add("cnv-childless");
   }
 
   newElement.appendChild(span);
@@ -176,21 +176,21 @@ function createCnvNode(
   if (conditionMatters && conditionString) {
     renderCnvNodeCondition(span, conditionString);
     if (text) {
-      span.appendChild(document.createElement('br'));
+      span.appendChild(document.createElement("br"));
     }
   }
   if (hasId) {
-    span.classList.add('cnv-node');
+    span.classList.add("cnv-node");
 
     renderCnvNodeForce(span, force);
     renderCnvNodeLine(span, text, speaker, generic, isPlayer);
 
     if (!hasChildren) {
-      appendSpanWithText(span, 'conversation end', 'cnv-end');
+      appendSpanWithText(span, "conversation end", "cnv-end");
     }
   } else {
-    span.classList.add('cnv-util');
-    span.appendChild(document.createTextNode(text ? text : 'node'));
+    span.classList.add("cnv-util");
+    span.appendChild(document.createTextNode(text ? text : "node"));
   }
 
   renderCnvNodeReactions(span, reactions, actionString);
@@ -199,18 +199,18 @@ function createCnvNode(
 }
 
 function renderChildList(parent: Element) {
-  const childList = document.createElement('ul');
+  const childList = document.createElement("ul");
   parent.appendChild(childList);
 
   return childList;
 }
 
 function createLinkNode(link: string) {
-  const newElement = document.createElement('li');
-  const span = document.createElement('span');
-  span.classList.add('cnv-childless');
+  const newElement = document.createElement("li");
+  const span = document.createElement("span");
+  span.classList.add("cnv-childless");
   newElement.appendChild(span);
-  span.classList.add('cnv-util');
+  span.classList.add("cnv-util");
   renderCnvLink(span, link);
 
   return newElement;
@@ -310,22 +310,22 @@ export function renderConversations(
 ) {
   const container = getCurrentCnvContainer();
   clearChildren(container);
-  const shadowContainer = document.createElement('div');
+  const shadowContainer = document.createElement("div");
   container.appendChild(shadowContainer);
 
   //doing this instead of using CSSStyleSheet
   //due to a bug/oversight in Firefox
-  const style = document.createElement('style');
+  const style = document.createElement("style");
   style.textContent = cnvTreeCSS;
 
-  const shadow = shadowContainer.attachShadow({ mode: 'open' });
+  const shadow = shadowContainer.attachShadow({ mode: "open" });
   shadow.appendChild(style);
 
-  const conversationDiv = document.createElement('div');
+  const conversationDiv = document.createElement("div");
   shadow.appendChild(conversationDiv);
 
-  const tree = document.createElement('ul');
-  tree.className = 'tree';
+  const tree = document.createElement("ul");
+  tree.className = "tree";
   conversationDiv.appendChild(tree);
 
   //bubblegum-bandaid feature because I'm annoyed

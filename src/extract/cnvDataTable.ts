@@ -1,16 +1,16 @@
-import { getCurrentPage } from '../elementFinders';
-import { TableRow } from '../types';
+import { getCurrentPage } from "../elementFinders";
+import { TableRow } from "../types";
 
 function extractTableRows(tableBody: Element) {
   return Array.from(tableBody.children).flatMap((row) => {
     const cells = <HTMLElement[]>Array.from(row.children);
     if (!cells[0] || !cells[0].children.length) {
-      console.warn('could not parse row:', row);
+      console.warn("could not parse row:", row);
       return [];
     }
 
     const deepness =
-      cells[0].firstElementChild?.tagName === 'SPAN'
+      cells[0].firstElementChild?.tagName === "SPAN"
         ? (<HTMLElement>cells[0].firstElementChild).innerText.length / 2
         : 0;
 
@@ -49,8 +49,8 @@ function parseTableData(
 }
 
 export function extractCurrentPage() {
-  const tableBody = getCurrentPage()[0].querySelector('.nice tbody');
-  if (!tableBody) throw new Error('no table found');
+  const tableBody = getCurrentPage()[0].querySelector(".nice tbody");
+  if (!tableBody) throw new Error("no table found");
 
   return parseTableData(extractTableRows(tableBody));
 }

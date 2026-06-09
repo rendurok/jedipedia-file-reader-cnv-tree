@@ -1,16 +1,16 @@
-import { getCurrentPage } from '../elementFinders';
-import { extractCurrentPage } from '../extract/cnvDataTable';
-import { cnvClassGenderConditions } from '../lut';
-import { TableRow } from '../types';
-import { getCnvNodeChildren, getCnvNodeId, getCnvNodeText } from './cnvNodes';
-import { parseArrayUnorder, parseToValues } from './utils';
+import { getCurrentPage } from "../elementFinders";
+import { extractCurrentPage } from "../extract/cnvDataTable";
+import { cnvClassGenderConditions } from "../lut";
+import { TableRow } from "../types";
+import { getCnvNodeChildren, getCnvNodeId, getCnvNodeText } from "./cnvNodes";
+import { parseArrayUnorder, parseToValues } from "./utils";
 
 export let genericLines = new Map<string, string>();
 
 //not universal, only works because the conditions
 //in generic_lines are all written in a certain way
 function getCnvNodeConditionsBad(cnvNodeRow: TableRow): string[] {
-  const conditionRow = cnvNodeRow.children.get('cnvConditionCompiled');
+  const conditionRow = cnvNodeRow.children.get("cnvConditionCompiled");
   if (!conditionRow) return [];
 
   return parseToValues(parseArrayUnorder(conditionRow)).flatMap(
@@ -22,10 +22,10 @@ function parseGenericLines(
   data: TableRow,
   playerConditions: Set<string>
 ): Map<string, string> {
-  const cnvNodeData = data.children.get('cnvTreeDialogNodes_Prototype');
+  const cnvNodeData = data.children.get("cnvTreeDialogNodes_Prototype");
   if (!cnvNodeData) {
-    alert('no conversation nodes found');
-    throw new Error('no conversation data found');
+    alert("no conversation nodes found");
+    throw new Error("no conversation data found");
   }
 
   const cnvNodes = new Map(
@@ -85,13 +85,13 @@ function parseGenericLines(
 export function setGenericLines(playerConditions: Set<string>) {
   const [page, _] = getCurrentPage();
   if (
-    page.querySelector(':nth-child(2 of p) :first-child mark')?.textContent !==
-    'cnv.misc.generic_lines'
+    page.querySelector(":nth-child(2 of p) :first-child mark")?.textContent !==
+    "cnv.misc.generic_lines"
   ) {
     if (
       !confirm(
-        'Current page is not cnv.misc.generic_lines, try opening anyway? ' +
-          '(This will probably not work)'
+        "Current page is not cnv.misc.generic_lines, try opening anyway? " +
+          "(This will probably not work)"
       )
     ) {
       return;
