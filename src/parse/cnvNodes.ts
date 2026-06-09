@@ -1,11 +1,11 @@
-import { cnvReactionTypes, miscLUT } from '../lut';
-import { CnvNode, TableRow } from '../types';
-import { readableCondition } from './conditions';
-import { parseArrayUnorder, parseToValues } from './utils';
+import { cnvReactionTypes, miscLUT } from "../lut";
+import { CnvNode, TableRow } from "../types";
+import { readableCondition } from "./conditions";
+import { parseArrayUnorder, parseToValues } from "./utils";
 
 export function getCnvNodeId(cnvNodeRow: TableRow) {
-  const id = cnvNodeRow.children.get('cnvNodeNumber')?.value;
-  if (!id) throw new Error('cnv node row has no id');
+  const id = cnvNodeRow.children.get("cnvNodeNumber")?.value;
+  if (!id) throw new Error("cnv node row has no id");
 
   return id;
 }
@@ -13,50 +13,50 @@ export function getCnvNodeId(cnvNodeRow: TableRow) {
 export function getCnvNodeText(cnvNodeRow: TableRow, id: string) {
   return (
     cnvNodeRow.children
-      .get('locTextRetrieverMap')
+      .get("locTextRetrieverMap")
       ?.children.get(id)
-      ?.children.get('strLocalizedTextRetrieverStringID')?.value || ''
+      ?.children.get("strLocalizedTextRetrieverStringID")?.value || ""
   );
 }
 
 export function getCnvNodeGeneric(cnvNodeRow: TableRow) {
-  return cnvNodeRow.children.get('cnvGenericNodeNumber')?.value;
+  return cnvNodeRow.children.get("cnvGenericNodeNumber")?.value;
 }
 
 export function getCnvNodeIsPlayer(cnvNodeRow: TableRow) {
-  return cnvNodeRow.children.get('cnvIsPcNode')?.value === 'true';
+  return cnvNodeRow.children.get("cnvIsPcNode")?.value === "true";
 }
 
 export function getCnvNodeSpeaker(cnvNodeRow: TableRow) {
-  return cnvNodeRow.children.get('cnvSpeaker')?.value || '';
+  return cnvNodeRow.children.get("cnvSpeaker")?.value || "";
 }
 
 export function getCnvNodeForce(cnvNodeRow: TableRow) {
   const forceTypeData =
-    cnvNodeRow.children.get('cnvRewardForceType')?.value || '';
+    cnvNodeRow.children.get("cnvRewardForceType")?.value || "";
   const forceAmountData =
-    cnvNodeRow.children.get('cnvRewardForceAmount')?.value || '';
+    cnvNodeRow.children.get("cnvRewardForceAmount")?.value || "";
   const forceAmountNumber = Number(miscLUT.get(forceAmountData));
 
   const forceNumber = Number(miscLUT.get(forceTypeData)) * forceAmountNumber;
   return forceAmountData || forceTypeData
     ? forceNumber ||
-        `${forceTypeData || 'unknown'}~${forceAmountNumber || forceAmountData}`
+        `${forceTypeData || "unknown"}~${forceAmountNumber || forceAmountData}`
     : 0;
 }
 
 export function getCnvNodeReactions(cnvNodeRow: TableRow) {
-  const reactionsRow = cnvNodeRow.children.get('cnvNodeCompanionReactions');
+  const reactionsRow = cnvNodeRow.children.get("cnvNodeCompanionReactions");
   if (!reactionsRow) return [];
 
   return (
     parseArrayUnorder(reactionsRow)?.map((reaction): [string, string] => {
       const reactionType = String(
-        reaction.children.get('cnvNodeReactionType')?.value
-      ).split(' = ')[0];
+        reaction.children.get("cnvNodeReactionType")?.value
+      ).split(" = ")[0];
 
       return [
-        String(reaction.children.get('cnvNodeReactionCompanion')?.value),
+        String(reaction.children.get("cnvNodeReactionCompanion")?.value),
         cnvReactionTypes.get(reactionType) || reactionType,
       ];
     }) || []
@@ -64,29 +64,29 @@ export function getCnvNodeReactions(cnvNodeRow: TableRow) {
 }
 
 export function getCnvNodeChildren(cnvNodeRow: TableRow) {
-  const childrenRow = cnvNodeRow.children.get('cnvChildNodes');
+  const childrenRow = cnvNodeRow.children.get("cnvChildNodes");
   if (!childrenRow) return [];
 
   return parseToValues(parseArrayUnorder(childrenRow));
 }
 
 export function getCnvNodeConditions(cnvNodeRow: TableRow) {
-  const cndCompiledRow = cnvNodeRow.children.get('cnvConditionCompiled');
+  const cndCompiledRow = cnvNodeRow.children.get("cnvConditionCompiled");
   const conditions = cndCompiledRow
     ? parseToValues(parseArrayUnorder(cndCompiledRow))
     : [];
 
-  const actionRow = cnvNodeRow.children.get('cnvActionExpressionCompiled');
+  const actionRow = cnvNodeRow.children.get("cnvActionExpressionCompiled");
   const actionExpression = actionRow
     ? parseToValues(parseArrayUnorder(actionRow))
     : [];
 
   if (
-    cnvNodeRow.children.get('cnvNodeConditionType')?.value ===
-    'cnvConditionType_Conditional#'
+    cnvNodeRow.children.get("cnvNodeConditionType")?.value ===
+    "cnvConditionType_Conditional#"
   ) {
     const conditional = cnvNodeRow.children.get(
-      'cnvNodeRequiredConditional'
+      "cnvNodeRequiredConditional"
     )?.value;
 
     if (conditional) {
@@ -94,12 +94,12 @@ export function getCnvNodeConditions(cnvNodeRow: TableRow) {
       conditions.push(conditional);
 
       if (
-        cnvNodeRow.children.get('cnvNodeIsConditionNegated')?.value === 'true'
+        cnvNodeRow.children.get("cnvNodeIsConditionNegated")?.value === "true"
       ) {
-        conditions.push('(10)'); // !
+        conditions.push("(10)"); // !
       }
       if (compiledLength) {
-        conditions.push('(8)'); // &&
+        conditions.push("(8)"); // &&
       }
     }
   }

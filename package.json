@@ -4,10 +4,9 @@
   "description": "Improves the conversation tree display of the Jedipedia File Reader.",
   "main": "userscript/index.user.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --config webpack/prod.ts",
     "dev": "webpack --config webpack/dev.ts",
-    "build:watch": "webpack --watch"
+    "fmt": "prettier -w ./src"
   },
   "repository": {
     "type": "git",

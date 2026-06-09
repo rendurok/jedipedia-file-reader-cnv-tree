@@ -1,9 +1,9 @@
-import { getCurrentPage } from '../elementFinders';
-import { extractCurrentPage } from '../extract/cnvDataTable';
-import { Conversations, TableRow } from '../types';
-import { getCnvNodes } from './cnvNodes';
-import { compareChildCnd } from './conditions';
-import { parseArrayUnorder, parseToValues } from './utils';
+import { getCurrentPage } from "../elementFinders";
+import { extractCurrentPage } from "../extract/cnvDataTable";
+import { Conversations, TableRow } from "../types";
+import { getCnvNodes } from "./cnvNodes";
+import { compareChildCnd } from "./conditions";
+import { parseArrayUnorder, parseToValues } from "./utils";
 
 function transferChildren(nodeId: string, children: string[], to: string[]) {
   let idx = to.findIndex((v) => v === nodeId);
@@ -28,23 +28,23 @@ function transferChildren(nodeId: string, children: string[], to: string[]) {
 }
 
 function parseCnvTree(data: TableRow): Conversations {
-  const cnvNodeData = data.children.get('cnvTreeDialogNodes_Prototype');
+  const cnvNodeData = data.children.get("cnvTreeDialogNodes_Prototype");
   if (!cnvNodeData) {
-    alert('no conversation found');
-    throw new Error('no conversation data found');
+    alert("no conversation found");
+    throw new Error("no conversation data found");
   }
 
   const cnvNodes = getCnvNodes(cnvNodeData);
 
-  const cnvLinkData = data.children.get('cnvTreeLinkNodes_Prototype');
+  const cnvLinkData = data.children.get("cnvTreeLinkNodes_Prototype");
   const cnvLinks = new Map(
     cnvLinkData
       ? parseArrayUnorder(cnvLinkData).map((row): [string, string] => {
-          const source = row.children.get('cnvNodeNumber')?.value;
-          const target = row.children.get('cnvLinkTarget')?.value;
+          const source = row.children.get("cnvNodeNumber")?.value;
+          const target = row.children.get("cnvLinkTarget")?.value;
           if (!source || !target) {
-            console.warn('undefined link source or target');
-            return ['-1', '-1'];
+            console.warn("undefined link source or target");
+            return ["-1", "-1"];
           }
 
           return [source, target];
@@ -60,13 +60,13 @@ function parseCnvTree(data: TableRow): Conversations {
 
       if (!child) {
         while (id && !child) {
-          id = cnvLinks.get(id) || '';
+          id = cnvLinks.get(id) || "";
           child = cnvNodes.get(id);
         }
 
         if (!child) {
           console.warn(`node ${childId} not found`);
-          return 'unresolved';
+          return "unresolved";
         }
       }
 
@@ -76,19 +76,19 @@ function parseCnvTree(data: TableRow): Conversations {
   });
 
   const rootNodeData = data.children
-    .get('cnvTreeRootNode_Prototype')
-    ?.children.get('cnvChildNodes');
+    .get("cnvTreeRootNode_Prototype")
+    ?.children.get("cnvChildNodes");
   const topLevelNodeIds = rootNodeData
     ? parseToValues(parseArrayUnorder(rootNodeData))
     : [];
 
-  topLevelNodeIds.forEach((id) => cnvNodes.get(id)?.parents.add('root'));
+  topLevelNodeIds.forEach((id) => cnvNodes.get(id)?.parents.add("root"));
 
   //find parentless nodes
   //prune useless nodes
   cnvNodes.forEach((cnvNode) => {
     if (!cnvNode.parents.size) {
-      cnvNode.parents.add('root');
+      cnvNode.parents.add("root");
       if (!topLevelNodeIds.includes(cnvNode.id)) {
         topLevelNodeIds.splice(0, 0, cnvNode.id);
       }
@@ -118,7 +118,7 @@ function parseCnvTree(data: TableRow): Conversations {
     ) {
       if (transferChildren(cnvNode.id, cnvNode.children, topLevelNodeIds)) {
         cnvNode.children.forEach((childId) =>
-          cnvNodes.get(childId)?.parents.add('root')
+          cnvNodes.get(childId)?.parents.add("root")
         );
       }
 
@@ -143,7 +143,7 @@ function parseCnvTree(data: TableRow): Conversations {
 
   //set displayed conditions
   cnvNodes.forEach((cnvNode) => {
-    if (cnvNode.parents.has('root')) {
+    if (cnvNode.parents.has("root")) {
       cnvNode.conditionMatters = true;
       return;
     }
@@ -170,15 +170,15 @@ export function parseCurrentCnvTree() {
   if (
     (<HTMLElement | undefined>(
       getCurrentPage()[0]?.children[2]?.children[0]?.children[1]
-    ))?.innerText !== 'cnvTree_Prototype'
+    ))?.innerText !== "cnvTree_Prototype"
   ) {
     if (
       !confirm(
-        'Base class does not appear to be cnvTree_Prototype, try parsing as one anyway? ' +
-          'This will probably not work.'
+        "Base class does not appear to be cnvTree_Prototype, try parsing as one anyway? " +
+          "This will probably not work."
       )
     ) {
-      throw new Error('baseclass not cnvTree_Prototype');
+      throw new Error("baseclass not cnvTree_Prototype");
     }
   }
 
