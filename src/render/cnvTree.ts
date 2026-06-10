@@ -220,87 +220,41 @@ function renderCnvNodes(
   [cnvNodes, topLevelIds]: Conversations,
   listElement: Element
 ) {
-  const renderQueue: [string, Element][] = topLevelIds.map((id) => [
-    id,
-    listElement,
-  ]);
-  const timesLinked = new Map<string, number>();
-  const links = new Map<
-    string,
-    { resolved: boolean; linkElement?: HTMLLIElement }
-  >();
+  const renderQueue: [string, Element][] = topLevelIds
+    .slice()
+    .reverse()
+    .map((id) => [id, listElement]);
+  const rendered = new Set<string>();
 
   function renderLinkNode(toId: string, parentElement: Element) {
-    const linkElement = createLinkNode(toId);
-    parentElement.appendChild(linkElement);
-
-    timesLinked.set(toId, (timesLinked.get(toId) || 0) + 1);
-
-    const link = links.get(toId);
-    if (!link) {
-      links.set(toId, { resolved: false, linkElement });
-    } else if (!link.resolved) {
-      link.linkElement = linkElement;
-    }
+    parentElement.prepend(createLinkNode(toId));
   }
 
   function renderCnvNode(id: string, cnvNode: CnvNode, parentElement: Element) {
-    const link = links.get(id);
-    if (link) link.resolved = true;
+    rendered.add(id);
 
     const hasChildren = cnvNode.children.length > 0;
 
     const cnvNodeElement = createCnvNode(cnvNode, hasChildren);
-    parentElement.appendChild(cnvNodeElement);
+    parentElement.prepend(cnvNodeElement);
 
     if (hasChildren) {
       const childList = renderChildList(cnvNodeElement);
-      cnvNode.children
-        .slice(0)
-        .reverse()
-        .forEach((id) => renderQueue.push([id, childList]));
+      cnvNode.children.forEach((id) => renderQueue.push([id, childList]));
     }
   }
 
-  function renderLoop() {
-    while (true) {
-      const nextNode = renderQueue.pop();
-      if (!nextNode) break;
-      const [id, parentElement] = nextNode;
-      const cnvNode = cnvNodes.get(id);
-
-      if (
-        !links.get(id)?.resolved &&
-        cnvNode &&
-        cnvNode.parents.size - (timesLinked.get(id) || 0) === 1
-      ) {
-        renderCnvNode(id, cnvNode, parentElement);
-      } else {
-        renderLinkNode(id, parentElement);
-      }
-    }
-  }
-
-  renderLoop();
-
-  // deal with possible cycles
   while (true) {
-    const nextLink = Array.from(links).find(([_, { resolved }]) => !resolved);
-    if (!nextLink) break;
-    const [id, link] = nextLink;
+    const nextNode = renderQueue.pop();
+    if (!nextNode) break;
+    const [id, parentElement] = nextNode;
     const cnvNode = cnvNodes.get(id);
-    const parentElement = link.linkElement?.parentElement;
 
-    if (!cnvNode || !parentElement) {
-      links.delete(id);
-      continue;
+    if (!rendered.has(id) && cnvNode) {
+      renderCnvNode(id, cnvNode, parentElement);
+    } else {
+      renderLinkNode(id, parentElement);
     }
-
-    link.linkElement?.remove();
-    link.resolved = true;
-    renderCnvNode(id, cnvNode, parentElement);
-    timesLinked.set(id, Infinity);
-    renderLoop();
   }
 }
 
